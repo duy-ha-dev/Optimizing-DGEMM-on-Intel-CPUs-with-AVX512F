@@ -11,8 +11,13 @@ void scale_c_k2(double *C,int M, int N, int LDC, double scalar){
     }
 }
 
-/* Register re-use weirdmatmul
- */
+/**
+ * Register re-use weirdmatmul
+ * - Loads (C(i,j)) into register before k loop
+ * - Same problem with wierdmatmul1; additional memory access to A and B
+ * - However, since we are only calling A(i, k) twice (and similarly B(k, j) twice), perf diff could be negligible
+ * compared to creating a temp
+*/
 void mydgemm_cpu_v2(int M, int N, int K, double alpha, double *A, int LDA, double *B, int LDB, double beta, double *C, int LDC){
     int i,j,k;
     if (beta != 1.0) scale_c_k2(C,M,N,LDC,beta);
